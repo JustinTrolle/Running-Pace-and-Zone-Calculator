@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USAT Run Pace Calculator & Training Zone Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --usa-red: #E31837;
+  --usa-navy: #0C2340;
+  --bright-red: #CE1141;
+  --dark-blue: #13294B;
+  --steel-blue: #4B7C9B;
+  --light-gray: #D6D6D6;
+  --white: #FFFFFF;
+  --charcoal: #3E3E3E;
+  --zone1: #2E86AB;
+  --zone2: #48A9A6;
+  --zone3: #6DBE45;
+  --zone4: #F0C808;
+  --zone5: #F18F01;
+  --zone6: #E84855;
+  --zone7: #B91C1C;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  color: var(--charcoal);
+  background: #F4F5F7;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── HEADER ─── */
+.hero {
+  background: linear-gradient(135deg, var(--usa-navy) 0%, var(--dark-blue) 60%, var(--steel-blue) 100%);
+  color: var(--white);
+  padding: 2.5rem 1.5rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--usa-red), var(--bright-red), var(--usa-red));
+}
+.hero h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  letter-spacing: 3px;
+  line-height: 1.1;
+  margin-bottom: 0.3rem;
+}
+.hero p {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.1rem;
+  opacity: 0.85;
+  font-weight: 400;
+}
+
+/* ─── LAYOUT ─── */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+/* ─── SECTION CARDS ─── */
+.section-card {
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(12,35,64,0.08);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  border: 1px solid rgba(12,35,64,0.06);
+}
+.section-header {
+  background: var(--usa-navy);
+  color: var(--white);
+  padding: 0.9rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+.section-header:hover { background: var(--dark-blue); }
+.section-header h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.45rem;
+  letter-spacing: 2px;
+  flex: 1;
+}
+.section-header .step-badge {
+  background: var(--usa-red);
+  color: var(--white);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.section-header .chevron {
+  transition: transform 0.3s;
+  flex-shrink: 0;
+}
+.section-header.collapsed .chevron { transform: rotate(-90deg); }
+.section-body {
+  padding: 1.5rem;
+  transition: max-height 0.4s ease, opacity 0.3s;
+  overflow: hidden;
+}
+.section-body.hidden {
+  max-height: 0 !important;
+  padding: 0 1.5rem;
+  opacity: 0;
+}
+
+/* ─── FORMS ─── */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+.form-group label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--usa-navy);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.form-group input, .form-group select {
+  padding: 0.6rem 0.8rem;
+  border: 2px solid var(--light-gray);
+  border-radius: 6px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: var(--white);
+}
+.form-group input:focus, .form-group select:focus {
+  outline: none;
+  border-color: var(--steel-blue);
+  box-shadow: 0 0 0 3px rgba(75,124,155,0.15);
+}
+.form-group .help-text {
+  font-size: 0.78rem;
+  color: #777;
+  font-style: italic;
+}
+.time-input-group {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+.time-input-group input {
+  width: 60px;
+  text-align: center;
+  padding: 0.6rem 0.3rem;
+  border: 2px solid var(--light-gray);
+  border-radius: 6px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 1rem;
+}
+.time-input-group input:focus {
+  outline: none;
+  border-color: var(--steel-blue);
+  box-shadow: 0 0 0 3px rgba(75,124,155,0.15);
+}
+.time-input-group span {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  color: var(--usa-navy);
+  font-size: 0.85rem;
+}
+
+/* ─── TOGGLE / TABS ─── */
+.input-toggle {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1.2rem;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid var(--usa-navy);
+}
+.input-toggle button {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  border: none;
+  background: var(--white);
+  color: var(--usa-navy);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.input-toggle button.active {
+  background: var(--usa-navy);
+  color: var(--white);
+}
+.input-toggle button:hover:not(.active) {
+  background: #e8edf2;
+}
+.toggle-panel { display: none; }
+.toggle-panel.active { display: block; }
+
+/* ─── BUTTONS ─── */
+.btn-calculate {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 2rem;
+  background: linear-gradient(135deg, var(--usa-red), var(--bright-red));
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.25rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 3px 10px rgba(227,24,55,0.3);
+}
+.btn-calculate:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 18px rgba(227,24,55,0.4);
+}
+.btn-calculate:active { transform: translateY(0); }
+
+/* ─── RESULT BOXES ─── */
+.result-box {
+  background: linear-gradient(135deg, #f8f9fb, #eef1f5);
+  border-left: 4px solid var(--steel-blue);
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  margin-top: 1rem;
+}
+.result-box.warn { border-left-color: #F0C808; background: linear-gradient(135deg, #fffef5, #fdf8e6); }
+.result-box.good { border-left-color: #6DBE45; background: linear-gradient(135deg, #f5fff0, #edfae6); }
+.result-box.alert { border-left-color: var(--usa-red); background: linear-gradient(135deg, #fff5f5, #fde6e6); }
+.result-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--usa-navy);
+  margin-bottom: 0.15rem;
+}
+.result-value {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  color: var(--usa-navy);
+  letter-spacing: 1px;
+}
+.result-detail {
+  font-size: 0.88rem;
+  color: #555;
+  margin-top: 0.2rem;
+}
+
+/* ─── REGRESSION GAUGE ─── */
+.regression-gauge {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--white);
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+.gauge-bar-track {
+  height: 28px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #2E86AB 0%, #6DBE45 25%, #6DBE45 35%, #F0C808 50%, #F18F01 70%, #E84855 100%);
+  position: relative;
+  margin: 0.8rem 0 0.5rem;
+  overflow: visible;
+}
+.gauge-marker {
+  position: absolute;
+  top: -6px;
+  width: 4px;
+  height: 40px;
+  background: var(--usa-navy);
+  border-radius: 2px;
+  transform: translateX(-50%);
+  transition: left 0.5s ease;
+  box-shadow: 0 0 6px rgba(0,0,0,0.3);
+}
+.gauge-marker::after {
+  content: attr(data-val);
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.9rem;
+  color: var(--usa-navy);
+  white-space: nowrap;
+}
+.gauge-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  color: #666;
+}
+.gauge-ideal-marker {
+  position: absolute;
+  top: -4px;
+  width: 2px;
+  height: 36px;
+  background: rgba(0,0,0,0.4);
+  border-radius: 1px;
+  z-index: 0;
+}
+.gauge-ideal-marker::after {
+  content: '6.5%';
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.68rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  color: #555;
+}
+
+/* ─── TABLES ─── */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+.data-table thead th {
+  background: var(--usa-navy);
+  color: var(--white);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.7rem 0.8rem;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.data-table thead th:first-child { border-radius: 8px 0 0 0; }
+.data-table thead th:last-child { border-radius: 0 8px 0 0; }
+.data-table tbody td {
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid #eee;
+}
+.data-table tbody tr:nth-child(even) { background: #f8f9fb; }
+.data-table tbody tr:hover { background: #eef3f8; }
+.data-table tbody tr.highlight-row {
+  background: rgba(75,124,155,0.12);
+  font-weight: 600;
+}
+.data-table .pace-cell {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--usa-navy);
+}
+
+/* ─── ZONE TABLE ─── */
+.zone-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 140px 140px;
+  gap: 0;
+  border-bottom: 1px solid #eee;
+  align-items: stretch;
+  min-height: 60px;
+}
+.zone-row:last-child { border-bottom: none; }
+.zone-badge-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem;
+}
+.zone-badge {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  color: var(--white);
+  width: 52px; height: 52px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.zone-desc-cell {
+  padding: 0.7rem 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.zone-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--usa-navy);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.zone-explanation {
+  font-size: 0.82rem;
+  color: #555;
+  line-height: 1.45;
+  margin-top: 0.15rem;
+}
+.zone-pace-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--usa-navy);
+  padding: 0.5rem;
+  text-align: center;
+}
+.zone-header-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 140px 140px;
+  background: var(--usa-navy);
+  color: var(--white);
+  border-radius: 8px 8px 0 0;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.zone-header-row > div {
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.zone-header-row > div:nth-child(2) { justify-content: flex-start; }
+
+.threshold-divider {
+  background: linear-gradient(90deg, transparent, var(--usa-navy), transparent);
+  height: 2px;
+  position: relative;
+  margin: 0;
+}
+.threshold-label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--white);
+  padding: 0.15rem 0.8rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.85rem;
+  color: var(--usa-red);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.zone-container {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* ─── SPEED TABLE ─── */
+.speed-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.88rem;
+}
+.speed-table thead th {
+  background: var(--dark-blue);
+  color: var(--white);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  padding: 0.65rem 0.6rem;
+  text-align: center;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.speed-table thead th:first-child { text-align: left; border-radius: 8px 0 0 0; }
+.speed-table thead th:last-child { border-radius: 0 8px 0 0; }
+.speed-table tbody td {
+  padding: 0.55rem 0.6rem;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+.speed-table tbody td:first-child {
+  text-align: left;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  color: var(--usa-navy);
+}
+.speed-table tbody tr:nth-child(even) { background: #f8f9fb; }
+.speed-table tbody tr:hover { background: #eef3f8; }
+
+/* ─── CUSTOM DISTANCE ─── */
+.custom-distance-row {
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f8f9fb;
+  border-radius: 8px;
+  border: 1px dashed var(--steel-blue);
+}
+.custom-distance-row .form-group { min-width: 140px; }
+.btn-add-distance {
+  padding: 0.6rem 1.2rem;
+  background: var(--steel-blue);
+  color: var(--white);
+  border: none;
+  border-radius: 6px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-add-distance:hover { background: var(--usa-navy); }
+
+/* ─── INFO CALLOUTS ─── */
+.info-callout {
+  background: linear-gradient(135deg, #eef5fa, #e6eef5);
+  border-left: 4px solid var(--steel-blue);
+  border-radius: 0 8px 8px 0;
+  padding: 1rem 1.2rem;
+  margin: 1rem 0;
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+.info-callout strong {
+  color: var(--usa-navy);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+}
+
+/* ─── ATHLETE TYPE SELECTOR ─── */
+.athlete-type-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+.athlete-type-btn {
+  padding: 1rem 0.8rem;
+  border: 2px solid var(--light-gray);
+  border-radius: 8px;
+  background: var(--white);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+}
+.athlete-type-btn:hover { border-color: var(--steel-blue); }
+.athlete-type-btn.active {
+  border-color: var(--usa-red);
+  background: rgba(227,24,55,0.04);
+}
+.athlete-type-btn .type-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  color: var(--usa-navy);
+  letter-spacing: 1px;
+}
+.athlete-type-btn .type-detail {
+  font-size: 0.78rem;
+  color: #777;
+  margin-top: 0.2rem;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+  .zone-row { grid-template-columns: 60px 1fr; }
+  .zone-header-row { grid-template-columns: 60px 1fr; }
+  .zone-header-row > div:nth-child(3),
+  .zone-header-row > div:nth-child(4),
+  .zone-pace-cell { display: none; }
+  .zone-desc-cell .mobile-paces { display: block; }
+  .form-grid { grid-template-columns: 1fr; }
+  .athlete-type-grid { grid-template-columns: 1fr; }
+  .container { padding: 1rem 0.6rem; }
+}
+@media (min-width: 769px) {
+  .zone-desc-cell .mobile-paces { display: none; }
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.section-card { animation: fadeInUp 0.4s ease both; }
+.section-card:nth-child(2) { animation-delay: 0.05s; }
+.section-card:nth-child(3) { animation-delay: 0.1s; }
+.section-card:nth-child(4) { animation-delay: 0.15s; }
+.section-card:nth-child(5) { animation-delay: 0.2s; }
+
+/* ─── PRINT ─── */
+@media print {
+  .hero { padding: 1rem; }
+  .section-body.hidden { max-height: none !important; padding: 1.5rem; opacity: 1; }
+  .btn-calculate, .custom-distance-row, .input-toggle { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div style="display:flex; align-items:center; justify-content:center; gap:1.2rem; flex-wrap:wrap;">
+    <img src="https://raw.githubusercontent.com/JustinTrolle/USAT-Images/52c71743566619c0f52cc1b80849691cba7c9f20/USA_Triathlon_Education_Logo_Transparent.png" alt="USA Triathlon Education" style="height:72px; width:auto; flex-shrink:0;">
+    <div>
+      <h1>Run Pace Calculator & Training Zone Guide</h1>
+      <p>USA Triathlon — Powered by Key Running Tests</p>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ═══════════════ SECTION 1: REGRESSION TEST ═══════════════ -->
+  <div class="section-card" id="sec-regression">
+    <div class="section-header" onclick="toggleSection('regression')">
+      <span class="step-badge">1</span>
+      <h2>Regression Rate Test (Short / Long Distance)</h2>
+      <svg class="chevron" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M6 8l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </div>
+    <div class="section-body" id="body-regression">
+      <div class="info-callout">
+        <strong>What is the Regression Rate?</strong> The regression rate measures the percentage by which your per-mile pace slows when you double the race distance. A rate of <strong>~6.5%</strong> is considered natural. A <strong>higher</strong> percentage indicates a need for more base, strength, and strength endurance work to build fatigue resistance. A <strong>lower</strong> percentage suggests a need for more speed, speed endurance, and potentially biomechanical work.
+      </div>
+
+      <p style="font-size:0.9rem; margin-bottom:0.8rem;">Default test: <strong>800m / 1600m</strong>. You may use any two distances where one is exactly half the other.</p>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Short Distance (meters)</label>
+          <input type="number" id="reg-short-dist" value="800" min="100" step="50" onchange="syncRegDistances()">
+        </div>
+        <div class="form-group">
+          <label>Long Distance (meters)</label>
+          <input type="number" id="reg-long-dist" value="1600" readonly tabindex="-1" style="background:#f0f0f0;">
+          <span class="help-text">Auto-set to 2× short distance</span>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label id="label-short-time">Short Distance Time (800m)</label>
+          <div class="time-input-group">
+            <input type="number" id="reg-short-mm" min="0" max="59" value="2" placeholder="mm">
+            <span>:</span>
+            <input type="number" id="reg-short-ss" min="0" max="59" value="28" placeholder="ss">
+          </div>
+        </div>
+        <div class="form-group">
+          <label id="label-long-time">Long Distance Time (1600m)</label>
+          <div class="time-input-group">
+            <input type="number" id="reg-long-mm" min="0" max="59" value="5" placeholder="mm">
+            <span>:</span>
+            <input type="number" id="reg-long-ss" min="0" max="59" value="15" placeholder="ss">
+          </div>
+        </div>
+      </div>
+
+      <div id="regression-results" style="display:none;">
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1rem;">
+          <div class="result-box" id="rr-box">
+            <div class="result-label">Regression Rate</div>
+            <div class="result-value" id="rr-value">—</div>
+            <div class="result-detail" id="rr-detail"></div>
+          </div>
+          <div class="result-box">
+            <div class="result-label">Converted Short Time (doubled)</div>
+            <div class="result-value" id="rr-converted-short">—</div>
+          </div>
+          <div class="result-box">
+            <div class="result-label">Long Distance Time</div>
+            <div class="result-value" id="rr-long-time">—</div>
+          </div>
+        </div>
+        <div class="regression-gauge" id="rr-gauge">
+          <div style="font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:0.9rem; color:var(--usa-navy); text-transform:uppercase; letter-spacing:0.5px;">Regression Rate Spectrum</div>
+          <div class="gauge-bar-track">
+            <div class="gauge-ideal-marker" style="left:32.5%;"></div>
+            <div class="gauge-marker" id="rr-gauge-marker" data-val="" style="left:32.5%;"></div>
+          </div>
+          <div class="gauge-labels">
+            <span>0% — Needs Speed Work</span>
+            <span>6.5% Natural</span>
+            <span>15%+ — Needs Endurance</span>
+          </div>
+        </div>
+        <div class="info-callout" id="rr-recommendation" style="margin-top:1rem;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick recalculate button after regression section -->
+  <div style="text-align:center; margin: 0.5rem 0 1rem;">
+    <button class="btn-calculate" onclick="calculateAll()" style="font-size:1.1rem; padding:0.65rem 1.6rem;">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2v16M2 10h16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+      CALCULATE ALL PACES & ZONES
+    </button>
+  </div>
+
+  <!-- ═══════════════ SECTION 2: 5K PREDICTION ═══════════════ -->
+  <div class="section-card" id="sec-5k">
+    <div class="section-header" onclick="toggleSection('5k')">
+      <span class="step-badge">2</span>
+      <h2>5K Time — From 4×1600m Test or Direct Input</h2>
+      <svg class="chevron" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M6 8l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </div>
+    <div class="section-body" id="body-5k">
+      <div class="info-callout">
+        The 4×1600m running test provides a predicted 5K pace by averaging your four rep times. Alternatively, if you already know your current 5K race time, enter it directly.
+      </div>
+
+      <div class="input-toggle">
+        <button class="active" onclick="switch5kMode('reps', this)">4×1600m Reps</button>
+        <button onclick="switch5kMode('direct', this)">Direct 5K Time</button>
+      </div>
+
+      <div class="toggle-panel active" id="panel-reps">
+        <div class="form-grid" style="grid-template-columns: repeat(4, 1fr);">
+          <div class="form-group">
+            <label>Rep 1</label>
+            <div class="time-input-group">
+              <input type="number" id="rep1-mm" min="0" max="30" value="5" placeholder="mm">
+              <span>:</span>
+              <input type="number" id="rep1-ss" min="0" max="59" value="44" placeholder="ss">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Rep 2</label>
+            <div class="time-input-group">
+              <input type="number" id="rep2-mm" min="0" max="30" value="5" placeholder="mm">
+              <span>:</span>
+              <input type="number" id="rep2-ss" min="0" max="59" value="38" placeholder="ss">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Rep 3</label>
+            <div class="time-input-group">
+              <input type="number" id="rep3-mm" min="0" max="30" value="5" placeholder="mm">
+              <span>:</span>
+              <input type="number" id="rep3-ss" min="0" max="59" value="34" placeholder="ss">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Rep 4</label>
+            <div class="time-input-group">
+              <input type="number" id="rep4-mm" min="0" max="30" value="5" placeholder="mm">
+              <span>:</span>
+              <input type="number" id="rep4-ss" min="0" max="59" value="35" placeholder="ss">
+            </div>
+          </div>
+        </div>
+        <div id="reps-avg" style="display:none;" class="result-box">
+          <div class="result-label">Average 1600m Rep</div>
+          <div class="result-value" id="reps-avg-val">—</div>
+        </div>
+      </div>
+
+      <div class="toggle-panel" id="panel-direct">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>5K Race Time</label>
+            <div class="time-input-group">
+              <input type="number" id="direct5k-mm" min="0" max="59" value="17" placeholder="mm">
+              <span>:</span>
+              <input type="number" id="direct5k-ss" min="0" max="59" value="35" placeholder="ss">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="fivek-results" style="display:none;">
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; margin-top:1rem;">
+          <div class="result-box good">
+            <div class="result-label">Predicted 5K Time</div>
+            <div class="result-value" id="pred-5k-time">—</div>
+          </div>
+          <div class="result-box">
+            <div class="result-label">5K Pace (per mile)</div>
+            <div class="result-value" id="pred-5k-pace">—</div>
+          </div>
+          <div class="result-box">
+            <div class="result-label">5K Pace (per km)</div>
+            <div class="result-value" id="pred-5k-pace-km">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SECTION 3: CALCULATE BUTTON ═══════════════ -->
+  <div style="text-align:center; margin: 0.5rem 0 1.5rem;">
+    <button class="btn-calculate" onclick="calculateAll()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2v16M2 10h16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+      CALCULATE ALL PACES & ZONES
+    </button>
+  </div>
+
+  <!-- ═══════════════ SECTION 3: RACE PREDICTIONS ═══════════════ -->
+  <div class="section-card" id="sec-race" style="display:none;">
+    <div class="section-header" onclick="toggleSection('race')">
+      <span class="step-badge">3</span>
+      <h2>Predicted Race Paces & Times</h2>
+      <svg class="chevron" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M6 8l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </div>
+    <div class="section-body" id="body-race">
+      <div class="info-callout">
+        Predictions use your 5K time and regression rate to estimate paces at various distances. The formula: <strong>Time = 5K_Time × (Distance_Ratio) ^ (1 + Regression_Rate)</strong>. A higher regression rate means more pace degradation over distance.
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="data-table" id="race-table">
+          <thead>
+            <tr>
+              <th>Distance</th>
+              <th>Predicted Time</th>
+              <th>Pace /mi</th>
+              <th>Pace /km</th>
+              <th>Speed (mph)</th>
+            </tr>
+          </thead>
+          <tbody id="race-table-body"></tbody>
+        </table>
+      </div>
+
+      <div class="custom-distance-row">
+        <div class="form-group">
+          <label>Add Custom Distance</label>
+          <input type="number" id="custom-dist-val" min="0.1" step="0.1" placeholder="e.g. 12">
+        </div>
+        <div class="form-group">
+          <label>Units</label>
+          <select id="custom-dist-unit">
+            <option value="km">Kilometers</option>
+            <option value="mi">Miles</option>
+          </select>
+        </div>
+        <button class="btn-add-distance" onclick="addCustomDistance()">+ Add Distance</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SECTION 4: TRAINING ZONES ═══════════════ -->
+  <div class="section-card" id="sec-zones" style="display:none;">
+    <div class="section-header" onclick="toggleSection('zones')">
+      <span class="step-badge">4</span>
+      <h2>7-Zone Run Training Intensity Guide</h2>
+      <svg class="chevron" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M6 8l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </div>
+    <div class="section-body" id="body-zones">
+      <div class="info-callout">
+        <strong>How zones are calculated:</strong> Your LT2 (Lactate Threshold 2) pace is estimated as the pace you could sustain for a continuous effort — <strong>35 min for Age-Group</strong>, <strong>45 min for Performance</strong>, or <strong>60 min for Elite</strong> athletes. LT1 is then set as a percentage of LT2 speed. Zones are distributed across these thresholds.
+      </div>
+
+      <div style="font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:0.95rem; color:var(--usa-navy); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.6rem;">Select Your Athlete Category</div>
+      <div class="athlete-type-grid">
+        <div class="athlete-type-btn active" onclick="selectAthleteType('ag', this)">
+          <div class="type-label">Age-Group</div>
+          <div class="type-detail">LT2 ≈ 35 min effort<br>LT1 = 70% of LT2 speed</div>
+        </div>
+        <div class="athlete-type-btn" onclick="selectAthleteType('perf', this)">
+          <div class="type-label">Performance</div>
+          <div class="type-detail">LT2 ≈ 45 min effort<br>LT1 = 75% of LT2 speed</div>
+        </div>
+        <div class="athlete-type-btn" onclick="selectAthleteType('elite', this)">
+          <div class="type-label">Elite</div>
+          <div class="type-detail">LT2 ≈ 60 min effort<br>LT1 = 80% of LT2 speed</div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin:1rem 0;">
+        <div class="result-box" id="lt2-box">
+          <div class="result-label">LT2 Pace (per mile)</div>
+          <div class="result-value" id="lt2-pace-val">—</div>
+          <div class="result-detail" id="lt2-detail"></div>
+        </div>
+        <div class="result-box" id="lt1-box">
+          <div class="result-label">LT1 Pace (per mile)</div>
+          <div class="result-value" id="lt1-pace-val">—</div>
+          <div class="result-detail" id="lt1-detail"></div>
+        </div>
+      </div>
+
+      <div class="zone-container" id="zone-chart">
+        <div class="zone-header-row">
+          <div>Zone</div>
+          <div>Description & Physiological Benefits</div>
+          <div>Pace /mi</div>
+          <div>Pace /km</div>
+        </div>
+        <!-- zones inserted by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SECTION 5: SPEED & SPEED ENDURANCE ═══════════════ -->
+  <div class="section-card" id="sec-speed" style="display:none;">
+    <div class="section-header" onclick="toggleSection('speed')">
+      <span class="step-badge">5</span>
+      <h2>Speed & Speed Endurance Training Paces</h2>
+      <svg class="chevron" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M6 8l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </div>
+    <div class="section-body" id="body-speed">
+      <div class="info-callout">
+        These goal times are derived from your 5K fitness and represent the paces you should target during speed and speed endurance interval sessions. They progress from longer repetitions (building speed endurance) down to shorter reps (developing raw speed and neuromuscular power).
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="speed-table" id="speed-table">
+          <thead>
+            <tr>
+              <th>Session</th>
+              <th>Rep Time</th>
+              <th>Pace /mi</th>
+              <th>Speed (mph)</th>
+              <th>Rep Distance (m)</th>
+            </tr>
+          </thead>
+          <tbody id="speed-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── UTILITIES ───
+function fmtTime(totalSeconds) {
+  if (!isFinite(totalSeconds) || totalSeconds < 0) return '—';
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = Math.round(totalSeconds % 60);
+  if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  return `${m}:${String(s).padStart(2,'0')}`;
+}
+
+function fmtPace(secondsPerMile) {
+  if (!isFinite(secondsPerMile) || secondsPerMile <= 0) return '—';
+  return fmtTime(secondsPerMile);
+}
+
+function getTimeInput(mmId, ssId) {
+  const mm = parseInt(document.getElementById(mmId).value) || 0;
+  const ss = parseInt(document.getElementById(ssId).value) || 0;
+  return mm * 60 + ss;
+}
+
+// ─── SECTION TOGGLE ───
+function toggleSection(id) {
+  const body = document.getElementById('body-' + id);
+  const header = body.previousElementSibling;
+  body.classList.toggle('hidden');
+  header.classList.toggle('collapsed');
+}
+
+// ─── REGRESSION DISTANCE SYNC ───
+function syncRegDistances() {
+  const shortDist = parseInt(document.getElementById('reg-short-dist').value) || 800;
+  const longDist = shortDist * 2;
+  document.getElementById('reg-long-dist').value = longDist;
+  document.getElementById('label-short-time').textContent = `Short Distance Time (${shortDist}m)`;
+  document.getElementById('label-long-time').textContent = `Long Distance Time (${longDist}m)`;
+}
+
+// ─── 5K MODE SWITCH ───
+function switch5kMode(mode, btn) {
+  document.querySelectorAll('.input-toggle button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-reps').classList.toggle('active', mode === 'reps');
+  document.getElementById('panel-direct').classList.toggle('active', mode === 'direct');
+}
+
+// ─── ATHLETE TYPE ───
+let athleteType = 'ag';
+function selectAthleteType(type, el) {
+  athleteType = type;
+  document.querySelectorAll('.athlete-type-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  if (lastCalcData) buildZones(lastCalcData.fiveKSec, lastCalcData.regressionDecimal);
+}
+
+// ─── CORE CALCULATIONS ───
+let lastCalcData = null;
+const customDistances = [];
+
+const standardRaces = [
+  { name: '1 Mile', dist: 1, unit: 'mi' },
+  { name: '3K', dist: 3, unit: 'km' },
+  { name: '5K', dist: 5, unit: 'km' },
+  { name: '8K', dist: 8, unit: 'km' },
+  { name: '5 Miles', dist: 5, unit: 'mi' },
+  { name: '10K', dist: 10, unit: 'km' },
+  { name: '15K', dist: 15, unit: 'km' },
+  { name: '10 Miles', dist: 10, unit: 'mi' },
+  { name: '20K', dist: 20, unit: 'km' },
+  { name: 'Half Marathon', dist: 13.109375, unit: 'mi' },
+  { name: '15 Miles', dist: 15, unit: 'mi' },
+  { name: '25K', dist: 25, unit: 'km' },
+  { name: '30K', dist: 30, unit: 'km' },
+  { name: '20 Miles', dist: 20, unit: 'mi' },
+  { name: 'Marathon', dist: 26.21875, unit: 'mi' },
+  { name: '50K', dist: 50, unit: 'km' },
+];
+
+function distToMiles(dist, unit) {
+  return unit === 'mi' ? dist : dist * 0.621371192;
+}
+
+function predictTime(fiveKSec, distMiles, regressionDecimal) {
+  const fiveKMiles = 5 * 0.621371192; // 3.10685596
+  return fiveKSec * Math.pow(distMiles / fiveKMiles, 1 + regressionDecimal);
+}
+
+function calculateAll() {
+  // 1. Regression Rate
+  const shortDist = parseInt(document.getElementById('reg-short-dist').value) || 800;
+  const shortTimeSec = getTimeInput('reg-short-mm', 'reg-short-ss');
+  const longTimeSec = getTimeInput('reg-long-mm', 'reg-long-ss');
+
+  // Double the short time to normalize to long distance
+  const convertedShort = shortTimeSec * 2;
+  const regressionPct = ((100 / convertedShort) * longTimeSec) - 100;
+  const regressionDecimal = regressionPct / 100;
+
+  // Display regression results
+  document.getElementById('regression-results').style.display = 'block';
+  document.getElementById('rr-value').textContent = regressionPct.toFixed(2) + '%';
+  document.getElementById('rr-converted-short').textContent = fmtTime(convertedShort);
+  document.getElementById('rr-long-time').textContent = fmtTime(longTimeSec);
+
+  // Style the box
+  const rrBox = document.getElementById('rr-box');
+  rrBox.className = 'result-box';
+  if (Math.abs(regressionPct - 6.5) < 1.5) { rrBox.classList.add('good'); }
+  else if (regressionPct > 10) { rrBox.classList.add('alert'); }
+  else { rrBox.classList.add('warn'); }
+
+  // Gauge
+  const gaugePos = Math.min(100, Math.max(0, (regressionPct / 20) * 100));
+  const marker = document.getElementById('rr-gauge-marker');
+  marker.style.left = gaugePos + '%';
+  marker.setAttribute('data-val', regressionPct.toFixed(1) + '%');
+
+  // Recommendation
+  const recEl = document.getElementById('rr-recommendation');
+  if (regressionPct > 8) {
+    recEl.innerHTML = `<strong>Training Recommendation:</strong> Your regression rate of ${regressionPct.toFixed(1)}% is above the 6.5% natural baseline. This indicates room for improvement in <strong>fatigue resistance</strong>. Focus on: base building with progressive long runs, strength training (particularly posterior chain), tempo/threshold work, and strength endurance sessions such as longer hill repeats and steady-state efforts.`;
+    document.getElementById('rr-detail').textContent = 'Above natural — build endurance base';
+  } else if (regressionPct < 5) {
+    recEl.innerHTML = `<strong>Training Recommendation:</strong> Your regression rate of ${regressionPct.toFixed(1)}% is below the 6.5% natural baseline. While your endurance is strong, this suggests room for improvement in <strong>raw speed and neuromuscular power</strong>. Focus on: speed work (200–400m intervals), speed endurance (800–1200m intervals), plyometrics, and biomechanical/running form drills.`;
+    document.getElementById('rr-detail').textContent = 'Below natural — develop speed';
+  } else {
+    recEl.innerHTML = `<strong>Training Recommendation:</strong> Your regression rate of ${regressionPct.toFixed(1)}% is near the 6.5% natural baseline — a well-balanced profile. Continue maintaining a blend of endurance and speed work. Fine-tune toward your goal race distance.`;
+    document.getElementById('rr-detail').textContent = 'Near natural — well balanced';
+  }
+
+  // 2. 5K Time
+  let fiveKSec;
+  const isRepsMode = document.getElementById('panel-reps').classList.contains('active');
+  if (isRepsMode) {
+    const r1 = getTimeInput('rep1-mm', 'rep1-ss');
+    const r2 = getTimeInput('rep2-mm', 'rep2-ss');
+    const r3 = getTimeInput('rep3-mm', 'rep3-ss');
+    const r4 = getTimeInput('rep4-mm', 'rep4-ss');
+    const avg1600 = (r1 + r2 + r3 + r4) / 4;
+    fiveKSec = (avg1600 / 1600) * 5000;
+    document.getElementById('reps-avg').style.display = 'block';
+    document.getElementById('reps-avg-val').textContent = fmtTime(avg1600);
+  } else {
+    fiveKSec = getTimeInput('direct5k-mm', 'direct5k-ss');
+  }
+
+  document.getElementById('fivek-results').style.display = 'block';
+  document.getElementById('pred-5k-time').textContent = fmtTime(fiveKSec);
+  const fiveKMiles = 5 * 0.621371192;
+  const pacePerMile5k = fiveKSec / fiveKMiles;
+  const pacePerKm5k = fiveKSec / 5;
+  document.getElementById('pred-5k-pace').textContent = fmtPace(pacePerMile5k);
+  document.getElementById('pred-5k-pace-km').textContent = fmtPace(pacePerKm5k);
+
+  // Save for zone recalc
+  lastCalcData = { fiveKSec, regressionDecimal };
+
+  // 3. Race Predictions
+  buildRaceTable(fiveKSec, regressionDecimal);
+
+  // 4. Zones
+  buildZones(fiveKSec, regressionDecimal);
+
+  // 5. Speed
+  buildSpeedTable(fiveKSec);
+
+  // Show hidden sections
+  document.getElementById('sec-race').style.display = '';
+  document.getElementById('sec-zones').style.display = '';
+  document.getElementById('sec-speed').style.display = '';
+
+  // Scroll to results
+  setTimeout(() => {
+    document.getElementById('sec-race').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 200);
+}
+
+function buildRaceTable(fiveKSec, regDec) {
+  const tbody = document.getElementById('race-table-body');
+  tbody.innerHTML = '';
+  const allDists = [...standardRaces, ...customDistances];
+  allDists.forEach(r => {
+    const miles = distToMiles(r.dist, r.unit);
+    const timeSec = predictTime(fiveKSec, miles, regDec);
+    const paceMile = timeSec / miles;
+    const km = r.unit === 'km' ? r.dist : r.dist / 0.621371192;
+    const paceKm = timeSec / km;
+    const mph = 3600 / paceMile;
+    const isHighlight = r.name === '5K' || r.name === 'Half Marathon' || r.name === 'Marathon';
+    const isCustom = r.isCustom;
+    tbody.innerHTML += `<tr class="${isHighlight ? 'highlight-row' : ''}" ${isCustom ? 'style="background:rgba(75,124,155,0.08);"' : ''}>
+      <td style="font-family:'Barlow Condensed',sans-serif; font-weight:600; color:var(--usa-navy);">${r.name}${isCustom ? ' ★' : ''}</td>
+      <td class="pace-cell">${fmtTime(timeSec)}</td>
+      <td>${fmtPace(paceMile)}</td>
+      <td>${fmtPace(paceKm)}</td>
+      <td>${mph.toFixed(1)}</td>
+    </tr>`;
+  });
+}
+
+function addCustomDistance() {
+  const val = parseFloat(document.getElementById('custom-dist-val').value);
+  const unit = document.getElementById('custom-dist-unit').value;
+  if (!val || val <= 0) return;
+  const label = val + (unit === 'km' ? ' km' : ' mi');
+  customDistances.push({ name: label, dist: val, unit: unit, isCustom: true });
+  document.getElementById('custom-dist-val').value = '';
+  if (lastCalcData) {
+    buildRaceTable(lastCalcData.fiveKSec, lastCalcData.regressionDecimal);
+  }
+}
+
+// ─── ZONE BUILDER ───
+const zoneData = [
+  {
+    zone: 1, name: 'Recovery', color: 'var(--zone1)',
+    explanation: 'Very easy effort promoting active recovery. Increases blood flow to muscles, enhances capillary development, and aids metabolic waste removal. Builds aerobic base without adding training stress. Ideal for recovery days and warm-up/cool-down.'
+  },
+  {
+    zone: 2, name: 'Easy Aerobic', color: 'var(--zone2)',
+    explanation: 'Comfortable, conversational pace. Maximizes fat oxidation, develops mitochondrial density, strengthens the heart\'s stroke volume, and builds the aerobic engine. This is where the majority of endurance training volume should occur.'
+  },
+  {
+    zone: 3, name: 'Moderate Aerobic', color: 'var(--zone3)',
+    explanation: 'Steady effort above easy pace but below threshold. Improves aerobic efficiency and muscular endurance. Enhances lactate clearance capacity and raises the aerobic ceiling. Good for progression runs and moderate tempo work.'
+  },
+  {
+    zone: 4, name: 'Threshold / Tempo', color: 'var(--zone4)',
+    explanation: 'Comfortably hard effort near lactate threshold. Raises the pace at which lactate accumulates, improves lactate buffering, and trains the body to sustain harder efforts longer. Key zone for tempo runs and cruise intervals.'
+  },
+  {
+    zone: 5, name: 'Supra-Threshold', color: 'var(--zone5)',
+    explanation: 'Hard effort above LT2. Develops VO2max, increases cardiac output, and improves the body\'s ability to tolerate and process high levels of lactate. Typically trained through longer intervals (3–8 min) with active recovery.'
+  },
+  {
+    zone: 6, name: 'VO2max / Speed Endurance', color: 'var(--zone6)',
+    explanation: 'Very hard effort training VO2max and anaerobic capacity. Improves maximal oxygen uptake, fast-twitch fiber recruitment, and the ability to sustain high-intensity efforts. Trained through 2–5 min intervals at near-maximum effort.'
+  },
+  {
+    zone: 7, name: 'Neuromuscular / Speed', color: 'var(--zone7)',
+    explanation: 'Maximum or near-maximum effort. Develops neuromuscular power, running economy at speed, fast-twitch fiber recruitment, and anaerobic power. Short, explosive reps (10–90 sec) with full recovery. Includes strides, hill sprints, and short track reps.'
+  }
+];
+
+function buildZones(fiveKSec, regDec) {
+  const config = {
+    ag:   { lt2Min: 35, lt1Pct: 0.70, label: 'Age-Group' },
+    perf: { lt2Min: 45, lt1Pct: 0.75, label: 'Performance' },
+    elite:{ lt2Min: 60, lt1Pct: 0.80, label: 'Elite' }
+  };
+  const c = config[athleteType];
+  const lt2TimeSec = c.lt2Min * 60;
+
+  // Find the pace for a distance that takes ~lt2TimeSec
+  // Binary search: find distance (in miles) where predictTime == lt2TimeSec
+  let lo = 0.5, hi = 30;
+  for (let i = 0; i < 50; i++) {
+    const mid = (lo + hi) / 2;
+    const t = predictTime(fiveKSec, mid, regDec);
+    if (t < lt2TimeSec) lo = mid; else hi = mid;
+  }
+  const lt2DistMiles = (lo + hi) / 2;
+  const lt2PaceMile = lt2TimeSec / lt2DistMiles; // sec per mile at LT2
+  const lt2Speed = 3600 / lt2PaceMile; // mph at LT2
+
+  // LT1 = percentage of LT2 speed
+  const lt1Speed = lt2Speed * c.lt1Pct;
+  const lt1PaceMile = 3600 / lt1Speed;
+
+  // Display LT values
+  document.getElementById('lt2-pace-val').textContent = fmtPace(lt2PaceMile);
+  document.getElementById('lt2-detail').textContent = `≈${c.lt2Min} min sustainable effort (${(lt2DistMiles * 1.60934).toFixed(1)} km)`;
+  document.getElementById('lt1-pace-val').textContent = fmtPace(lt1PaceMile);
+  document.getElementById('lt1-detail').textContent = `${Math.round(c.lt1Pct*100)}% of LT2 speed (${lt1Speed.toFixed(1)} mph)`;
+
+  // Define zone boundaries (pace per mile: slower = higher number)
+  // Z1: slowest → Z7: fastest
+  // Below LT1: Z1 and Z2
+  // Between LT1 and LT2: Z3 and Z4
+  // Above LT2: Z5, Z6, Z7
+
+  // Z1 bottom = LT1 pace * 1.25 (very slow)
+  // Z2 bottom = LT1 pace * 1.10
+  // LT1 line
+  // Z3 bottom = LT1 pace
+  // Z4 bottom = midpoint of LT1 and LT2
+  // LT2 line
+  // Z5 bottom = LT2 pace
+  // Z6 bottom = LT2 pace * 0.92
+  // Z7 bottom = LT2 pace * 0.85
+  // Z7 top = LT2 pace * 0.75
+
+  const z = [];
+  // Z1: very easy, 25% slower than LT1 down to 10% slower
+  z.push({ slow: lt1PaceMile * 1.25, fast: lt1PaceMile * 1.10 });
+  // Z2: easy, 10% slower than LT1 to LT1
+  z.push({ slow: lt1PaceMile * 1.10, fast: lt1PaceMile });
+  // Z3: moderate, LT1 to midpoint
+  const midPace = (lt1PaceMile + lt2PaceMile) / 2;
+  z.push({ slow: lt1PaceMile, fast: midPace });
+  // Z4: threshold, midpoint to LT2
+  z.push({ slow: midPace, fast: lt2PaceMile });
+  // Z5: supra-threshold
+  z.push({ slow: lt2PaceMile, fast: lt2PaceMile * 0.93 });
+  // Z6: VO2max
+  z.push({ slow: lt2PaceMile * 0.93, fast: lt2PaceMile * 0.85 });
+  // Z7: neuromuscular
+  z.push({ slow: lt2PaceMile * 0.85, fast: lt2PaceMile * 0.72 });
+
+  // Build zone HTML
+  const container = document.getElementById('zone-chart');
+  // Keep header
+  let html = container.querySelector('.zone-header-row').outerHTML;
+
+  for (let i = 0; i < 7; i++) {
+    // Insert threshold dividers
+    if (i === 2) {
+      html += `<div class="threshold-divider"><span class="threshold-label">▲ LT1 THRESHOLD — ${fmtPace(lt1PaceMile)} /mi</span></div>`;
+    }
+    if (i === 4) {
+      html += `<div class="threshold-divider"><span class="threshold-label">▲ LT2 THRESHOLD — ${fmtPace(lt2PaceMile)} /mi</span></div>`;
+    }
+
+    const zd = zoneData[i];
+    const paceSlowKm = z[i].slow / 1.60934;
+    const paceFastKm = z[i].fast / 1.60934;
+
+    html += `<div class="zone-row">
+      <div class="zone-badge-cell"><div class="zone-badge" style="background:${zd.color};">Z${zd.zone}</div></div>
+      <div class="zone-desc-cell">
+        <div class="zone-name">${zd.name}</div>
+        <div class="zone-explanation">${zd.explanation}</div>
+        <div class="mobile-paces" style="margin-top:0.3rem; font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:0.88rem; color:var(--usa-navy);">
+          ${fmtPace(z[i].slow)} – ${fmtPace(z[i].fast)} /mi &nbsp;|&nbsp; ${fmtPace(paceSlowKm)} – ${fmtPace(paceFastKm)} /km
+        </div>
+      </div>
+      <div class="zone-pace-cell">${fmtPace(z[i].slow)} – ${fmtPace(z[i].fast)}</div>
+      <div class="zone-pace-cell">${fmtPace(paceSlowKm)} – ${fmtPace(paceFastKm)}</div>
+    </div>`;
+  }
+
+  container.innerHTML = html;
+}
+
+// ─── SPEED TABLE ───
+function buildSpeedTable(fiveKSec) {
+  const tbody = document.getElementById('speed-table-body');
+  tbody.innerHTML = '';
+
+  // 1600m goal from 5K: pace_per_1600 = (5K_time / 5000) * 1600
+  const goal1600 = (fiveKSec / 5000) * 1600;
+  // 1000m goal
+  const goal1000 = (goal1600 / 1600) * 1000 * 0.975;
+  // 2km goal
+  const goal2000 = goal1000 * 2 * 1.065;
+  // 1200m goal
+  const goal1200 = (goal1600 / 4) * 3 * 0.987;
+  // 800m goal
+  const goal800 = (goal1600 / 2) * 0.935;
+  // 600m goal
+  const goal600 = (goal800 / 800) * 600 * 0.985;
+  // 400m goal
+  const goal400 = (goal800 / 2) * 0.94;
+  // 200m goal
+  const goal200 = (goal400 / 2) * 0.945;
+  // 250m hill
+  const goalHill = (goal1000 / 4) * 1.15;
+
+  const sets = [
+    { name: '2 × 2km', time: goal2000, dist: 2000, reps: '2' },
+    { name: '4-5 × 1600m', time: goal1600, dist: 1600, reps: '4-5' },
+    { name: '4-8 × 1200m', time: goal1200, dist: 1200, reps: '4-8' },
+    { name: '5-8 × 1000m', time: goal1000, dist: 1000, reps: '5-8' },
+    { name: '6-8 × 800m', time: goal800, dist: 800, reps: '6-8' },
+    { name: '4-8 × 600m', time: goal600, dist: 600, reps: '4-8' },
+    { name: '12-20 × 400m', time: goal400, dist: 400, reps: '12-20' },
+    { name: '200m Reps', time: goal200, dist: 200, reps: '8-16' },
+    { name: '10 × 250m Hill', time: goalHill, dist: 250, reps: '10' },
+  ];
+
+  sets.forEach(s => {
+    const paceMile = (s.time / s.dist) * 1609.34;
+    const mph = 3600 / paceMile;
+    const distPerHr = mph * 1609.34; // meters per hour
+    tbody.innerHTML += `<tr>
+      <td>${s.name}</td>
+      <td class="pace-cell">${fmtTime(s.time)}</td>
+      <td>${fmtPace(paceMile)}</td>
+      <td>${mph.toFixed(1)}</td>
+      <td>${Math.round(s.dist)}</td>
+    </tr>`;
+  });
+}
+
+// ─── INIT ───
+syncRegDistances();
+</script>
+
+</body>
+</html>
