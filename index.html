@@ -617,11 +617,67 @@ body {
 .section-card:nth-child(4) { animation-delay: 0.15s; }
 .section-card:nth-child(5) { animation-delay: 0.2s; }
 
+/* ─── PRINT BUTTON ─── */
+.print-bar {
+  text-align: center;
+  margin: 0.5rem 0 2rem;
+  display: none;
+}
+.btn-print {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 2rem;
+  background: var(--usa-navy);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.25rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+  box-shadow: 0 3px 10px rgba(12,35,64,0.3);
+}
+.btn-print:hover {
+  background: var(--dark-blue);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 18px rgba(12,35,64,0.4);
+}
+.btn-print:active { transform: translateY(0); }
+.print-bar .print-note {
+  font-size: 0.82rem;
+  color: #777;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
 /* ─── PRINT ─── */
 @media print {
-  .hero { padding: 1rem; }
+  @page { margin: 0.5in; }
+  body { background: var(--white); }
+  .hero { padding: 1rem; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .container { padding: 0; max-width: none; }
+  .section-card {
+    animation: none;
+    box-shadow: none;
+    border: 1px solid #ccc;
+    margin-bottom: 0;
+  }
+  /* Each key section starts on its own page */
+  #sec-5k, #sec-race, #sec-zones, #sec-speed { page-break-before: always; break-before: page; }
+  .section-header { cursor: default; }
+  .section-header .chevron { display: none; }
   .section-body.hidden { max-height: none !important; padding: 1.5rem; opacity: 1; }
-  .btn-calculate, .custom-distance-row, .input-toggle { display: none; }
+  .btn-calculate, .custom-distance-row, .input-toggle, .print-bar, .help-text { display: none !important; }
+  /* Keep rows together */
+  .zone-row, .data-table tr, .speed-table tr, .result-box, .info-callout, .regression-gauge { page-break-inside: avoid; break-inside: avoid; }
+  .data-table thead th { position: static; }
+  /* Preserve colors in print */
+  .section-header, .step-badge, .zone-badge, .zone-header-row, .data-table thead th, .speed-table thead th,
+  .result-box, .info-callout, .gauge-bar-track, .athlete-type-btn, .highlight-row {
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
 }
 </style>
 </head>
@@ -947,6 +1003,15 @@ body {
     </div>
   </div>
 
+  <!-- ═══════════════ PRINT RESULTS ═══════════════ -->
+  <div class="print-bar" id="print-bar">
+    <button class="btn-print" onclick="window.print()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 7V3h10v4M5 14H3V8h14v6h-2M6 12h8v5H6z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      PRINT MY RESULTS
+    </button>
+    <div class="print-note">Each section prints on its own page. Enable "Background graphics" in your print dialog to keep the colors.</div>
+  </div>
+
 </div>
 
 <script>
@@ -1120,6 +1185,7 @@ function calculateAll() {
   document.getElementById('sec-race').style.display = '';
   document.getElementById('sec-zones').style.display = '';
   document.getElementById('sec-speed').style.display = '';
+  document.getElementById('print-bar').style.display = 'block';
 }
 
 function buildRaceTable(fiveKSec, regDec) {
