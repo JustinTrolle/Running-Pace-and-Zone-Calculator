@@ -1116,15 +1116,10 @@ function calculateAll() {
   // 5. Speed
   buildSpeedTable(fiveKSec);
 
-  // Show hidden sections
+  // Show hidden sections (no auto-scroll: the page stays where the user is)
   document.getElementById('sec-race').style.display = '';
   document.getElementById('sec-zones').style.display = '';
   document.getElementById('sec-speed').style.display = '';
-
-  // Scroll to results
-  setTimeout(() => {
-    document.getElementById('sec-race').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 200);
 }
 
 function buildRaceTable(fiveKSec, regDec) {
@@ -1231,17 +1226,6 @@ function buildZones(fiveKSec, regDec) {
   // Between LT1 and LT2: Z3 and Z4
   // Above LT2: Z5, Z6, Z7
 
-  // Z1 bottom = LT1 pace * 1.25 (very slow)
-  // Z2 bottom = LT1 pace * 1.10
-  // LT1 line
-  // Z3 bottom = LT1 pace
-  // Z4 bottom = midpoint of LT1 and LT2
-  // LT2 line
-  // Z5 bottom = LT2 pace
-  // Z6 bottom = LT2 pace * 0.92
-  // Z7 bottom = LT2 pace * 0.85
-  // Z7 top = LT2 pace * 0.75
-
   const z = [];
   // Z1: very easy, 25% slower than LT1 down to 10% slower
   z.push({ slow: lt1PaceMile * 1.25, fast: lt1PaceMile * 1.10 });
@@ -1333,7 +1317,6 @@ function buildSpeedTable(fiveKSec) {
   sets.forEach(s => {
     const paceMile = (s.time / s.dist) * 1609.34;
     const mph = 3600 / paceMile;
-    const distPerHr = mph * 1609.34; // meters per hour
     tbody.innerHTML += `<tr>
       <td>${s.name}</td>
       <td class="pace-cell">${fmtTime(s.time)}</td>
