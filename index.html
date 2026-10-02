@@ -1299,8 +1299,6 @@ function buildSpeedTable(fiveKSec) {
   const goal400 = (goal800 / 2) * 0.94;
   // 200m goal
   const goal200 = (goal400 / 2) * 0.945;
-  // 250m hill
-  const goalHill = (goal1000 / 4) * 1.15;
 
   const sets = [
     { name: '2 × 2km', time: goal2000, dist: 2000, reps: '2' },
@@ -1311,7 +1309,6 @@ function buildSpeedTable(fiveKSec) {
     { name: '4-8 × 600m', time: goal600, dist: 600, reps: '4-8' },
     { name: '12-20 × 400m', time: goal400, dist: 400, reps: '12-20' },
     { name: '200m Reps', time: goal200, dist: 200, reps: '8-16' },
-    { name: '10 × 250m Hill', time: goalHill, dist: 250, reps: '10' },
   ];
 
   sets.forEach(s => {
