@@ -381,7 +381,7 @@ body {
 /* ─── ZONE TABLE ─── */
 .zone-row {
   display: grid;
-  grid-template-columns: 80px 1fr 140px 140px;
+  grid-template-columns: 80px 1fr 120px 140px 140px;
   gap: 0;
   border-bottom: 1px solid #eee;
   align-items: stretch;
@@ -436,7 +436,7 @@ body {
 }
 .zone-header-row {
   display: grid;
-  grid-template-columns: 80px 1fr 140px 140px;
+  grid-template-columns: 80px 1fr 120px 140px 140px;
   background: var(--usa-navy);
   color: var(--white);
   border-radius: 8px 8px 0 0;
@@ -596,6 +596,7 @@ body {
   .zone-header-row { grid-template-columns: 60px 1fr; }
   .zone-header-row > div:nth-child(3),
   .zone-header-row > div:nth-child(4),
+  .zone-header-row > div:nth-child(5),
   .zone-pace-cell { display: none; }
   .zone-desc-cell .mobile-paces { display: block; }
   .form-grid { grid-template-columns: 1fr; }
@@ -967,6 +968,7 @@ body {
         <div class="zone-header-row">
           <div>Zone</div>
           <div>Description & Physiological Benefits</div>
+          <div>% of LT2 Pace</div>
           <div>Pace /mi</div>
           <div>Pace /km</div>
         </div>
@@ -1309,6 +1311,19 @@ function buildZones(fiveKSec, regDec) {
   // Z7: neuromuscular
   z.push({ slow: lt2PaceMile * 0.85, fast: lt2PaceMile * 0.72 });
 
+  // % of LT2 pace for each zone (whole numbers, non-overlapping, for TrainingPeaks).
+  // Pace-based, so a higher % is slower. Z1 is the slowest; each faster zone's
+  // slow end is one point below the previous zone's fast end.
+  const pct = [];
+  let prevFast = null;
+  for (let i = 0; i < 7; i++) {
+    let slowPct = prevFast === null ? Math.round(z[i].slow / lt2PaceMile * 100) : prevFast - 1;
+    let fastPct = Math.round(z[i].fast / lt2PaceMile * 100);
+    if (fastPct > slowPct) fastPct = slowPct;
+    pct.push({ slow: slowPct, fast: fastPct });
+    prevFast = fastPct;
+  }
+
   // Build zone HTML
   const container = document.getElementById('zone-chart');
   // Keep header
@@ -1333,9 +1348,10 @@ function buildZones(fiveKSec, regDec) {
         <div class="zone-name">${zd.name}</div>
         <div class="zone-explanation">${zd.explanation}</div>
         <div class="mobile-paces" style="margin-top:0.3rem; font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:0.88rem; color:var(--usa-navy);">
-          ${fmtPace(z[i].slow)} – ${fmtPace(z[i].fast)} /mi &nbsp;|&nbsp; ${fmtPace(paceSlowKm)} – ${fmtPace(paceFastKm)} /km
+          ${pct[i].slow}–${pct[i].fast}% LT2 &nbsp;|&nbsp; ${fmtPace(z[i].slow)} – ${fmtPace(z[i].fast)} /mi &nbsp;|&nbsp; ${fmtPace(paceSlowKm)} – ${fmtPace(paceFastKm)} /km
         </div>
       </div>
+      <div class="zone-pace-cell">${pct[i].slow}–${pct[i].fast}%</div>
       <div class="zone-pace-cell">${fmtPace(z[i].slow)} – ${fmtPace(z[i].fast)}</div>
       <div class="zone-pace-cell">${fmtPace(paceSlowKm)} – ${fmtPace(paceFastKm)}</div>
     </div>`;
