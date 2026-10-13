@@ -968,7 +968,7 @@ body {
         <div class="zone-header-row">
           <div>Zone</div>
           <div>Description & Physiological Benefits</div>
-          <div>% of LT2 Pace</div>
+          <div>% of LT2 / Threshold</div>
           <div>Pace /mi</div>
           <div>Pace /km</div>
         </div>
@@ -1311,17 +1311,17 @@ function buildZones(fiveKSec, regDec) {
   // Z7: neuromuscular
   z.push({ slow: lt2PaceMile * 0.85, fast: lt2PaceMile * 0.72 });
 
-  // % of LT2 pace for each zone (whole numbers, non-overlapping, for TrainingPeaks).
-  // Pace-based, so a higher % is slower. Z1 is the slowest; each faster zone's
-  // slow end is one point below the previous zone's fast end.
+  // % of LT2 for each zone (whole numbers, non-overlapping, for TrainingPeaks).
+  // Speed-based, same as the cycling calculator: a higher % is faster, Z4 tops
+  // out at 100% (LT2) and each zone starts one point above the zone below it.
   const pct = [];
-  let prevFast = null;
+  let prevHigh = null;
   for (let i = 0; i < 7; i++) {
-    let slowPct = prevFast === null ? Math.round(z[i].slow / lt2PaceMile * 100) : prevFast - 1;
-    let fastPct = Math.round(z[i].fast / lt2PaceMile * 100);
-    if (fastPct > slowPct) fastPct = slowPct;
-    pct.push({ slow: slowPct, fast: fastPct });
-    prevFast = fastPct;
+    let low = prevHigh === null ? Math.round(lt2PaceMile / z[i].slow * 100) : prevHigh + 1;
+    let high = Math.round(lt2PaceMile / z[i].fast * 100);
+    if (high < low) high = low;
+    pct.push({ low, high });
+    prevHigh = high;
   }
 
   // Build zone HTML
@@ -1348,10 +1348,10 @@ function buildZones(fiveKSec, regDec) {
         <div class="zone-name">${zd.name}</div>
         <div class="zone-explanation">${zd.explanation}</div>
         <div class="mobile-paces" style="margin-top:0.3rem; font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:0.88rem; color:var(--usa-navy);">
-          ${pct[i].slow}–${pct[i].fast}% LT2 &nbsp;|&nbsp; ${fmtPace(z[i].slow)} – ${fmtPace(z[i].fast)} /mi &nbsp;|&nbsp; ${fmtPace(paceSlowKm)} – ${fmtPace(paceFastKm)} /km
+          ${pct[i].low}–${pct[i].high}% LT2 &nbsp;|&nbsp; ${fmtPace(z[i].slow)} – ${fmtPace(z[i].fast)} /mi &nbsp;|&nbsp; ${fmtPace(paceSlowKm)} – ${fmtPace(paceFastKm)} /km
         </div>
       </div>
-      <div class="zone-pace-cell">${pct[i].slow}–${pct[i].fast}%</div>
+      <div class="zone-pace-cell">${pct[i].low}–${pct[i].high}%</div>
       <div class="zone-pace-cell">${fmtPace(z[i].slow)} – ${fmtPace(z[i].fast)}</div>
       <div class="zone-pace-cell">${fmtPace(paceSlowKm)} – ${fmtPace(paceFastKm)}</div>
     </div>`;
